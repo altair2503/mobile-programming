@@ -32,7 +32,9 @@ fun main() = runBlocking {
         println("2) Filter by genre")
         println("3) Stats (total pages of print books)")
         println("4) Show borrowables (polymorphism)")
-        println("5) Sync from remote catalog")
+        println("5) Borrow book by id")
+        println("6) Return book by id")
+        println("7) Sync from remote catalog")
         println("0) Exit")
         print("Choice: ")
 
@@ -48,9 +50,10 @@ fun main() = runBlocking {
                 if (catalog.size() == 0) {
                     println("Catalog is empty.")
                 } else {
-                    catalog.printAll { book ->
-                        val tags = book.genres.joinToString(", ")
-                        "${book.id}: ${book.title} [$tags]"
+                    catalog.printAll { item ->
+                        val tags = item.genres.joinToString(", ")
+                        val status = if (item.available) "available" else "borrowed"
+                        "${item.id}: ${item.title} [$tags] — $status"
                     }
                 }
             }
@@ -81,15 +84,41 @@ fun main() = runBlocking {
             }
             "4" -> {
                 val items: List<Borrowable> = catalog.borrowables()
-                for (item in items) {
-                    println(item.describe())
-                    if (item.available) {
-                        val ok: Boolean = item.borrow()
-                        println(if (ok) "  -> borrowed" else "  -> failed")
+                if (items.isEmpty()) {
+                    println("No borrowable items.")
+                } else {
+                    for (item in items) {
+                        println(item.describe())
                     }
                 }
             }
             "5" -> {
+                print("Book id: ")
+                val id = readlnOrNull()?.trim().orEmpty()
+                if (id.isEmpty()) {
+                    println("Id cannot be empty.")
+                } else if (catalog.findById(id) == null) {
+                    println("Book not found.")
+                } else if (catalog.borrowById(id)) {
+                    println("Borrowed.")
+                } else {
+                    println("Could not borrow (already borrowed?).")
+                }
+            }
+            "6" -> {
+                print("Book id: ")
+                val id = readlnOrNull()?.trim().orEmpty()
+                if (id.isEmpty()) {
+                    println("Id cannot be empty.")
+                } else if (catalog.findById(id) == null) {
+                    println("Book not found.")
+                } else if (catalog.returnById(id)) {
+                    println("Returned.")
+                } else {
+                    println("Could not return (already available?).")
+                }
+            }
+            "7" -> {
                 println("Syncing...")
                 when (val result = RemoteCatalog.sync(catalog)) {
                     is LoadResult.Success -> println("Added ${result.added} book(s).")

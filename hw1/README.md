@@ -23,8 +23,8 @@ In IntelliJ IDEA: open the `hw1` folder as a project and run `Main.kt`.
 | Functions, higher-order functions, lambdas | `LibraryCatalog.kt`, `Main.kt` |
 | Classes and objects | `LibraryItem.kt`, `LibraryCatalog.kt`, `RemoteCatalog.kt` (object) |
 | Inheritance | `LibraryItem.kt`, `PrintedBook.kt`, `EBook.kt` |
-| Interfaces and polymorphism | `Borrowable.kt`, `PrintedBook.kt`, `EBook.kt`, menu option 4 in `Main.kt` |
-| Data class | `Book.kt` |
+| Interfaces and polymorphism | `Borrowable.kt`, `PrintedBook.kt`, `EBook.kt`, menu options 4–6 in `Main.kt` |
+| Data class | `Book.kt` (DTO); converted via `BookMapper.kt` |
 | Sealed class | `LoadResult.kt` |
 | Suspend function and coroutine | `RemoteCatalog.kt`, `runBlocking` in `Main.kt` |
 

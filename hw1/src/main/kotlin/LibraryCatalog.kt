@@ -13,7 +13,7 @@ class LibraryCatalog {
         books.flatMap { it.genres }.toSet()
 
     fun printAll(formatter: (Book) -> String = { "${it.id}: ${it.title} (${it.author})" }) {
-        books.sortedBy { it.title }.forEach { println(formatter(it)) }
+        books.sortedBy { it.id }.forEach { println(formatter(it)) }
     }
 
     fun titlesByGenre(genre: String): List<String> =

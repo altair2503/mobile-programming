@@ -6,7 +6,7 @@ object RemoteCatalog {
         return try {
             val newBooks = listOf(
                 Book(
-                    id = "sync-1",
+                    id = "3",
                     title = "Clean Code",
                     author = "Robert Martin",
                     genres = setOf("Programming", "Software"),
@@ -15,7 +15,7 @@ object RemoteCatalog {
                     isDigital = false,
                 ),
                 Book(
-                    id = "sync-2",
+                    id = "4",
                     title = "Kotlin in Action",
                     author = "Jemerov",
                     genres = setOf("Programming", "Kotlin"),

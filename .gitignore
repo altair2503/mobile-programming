@@ -1,0 +1,14 @@
+# IntelliJ IDEA / Android Studio (repo opened at root)
+.idea/
+*.iml
+
+# Cursor
+.cursor/
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+
+# Local secrets (if you add env files later)
+.env
+.env.*

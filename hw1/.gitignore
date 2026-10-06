@@ -1,0 +1,17 @@
+# Gradle
+.gradle/
+build/
+
+# Kotlin
+.kotlin/
+
+# IntelliJ (if hw1 is opened as project root)
+.idea/
+*.iml
+out/
+
+# Logs
+*.log
+
+# JVM heap dumps
+*.hprof

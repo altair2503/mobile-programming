@@ -6,9 +6,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
@@ -30,6 +33,9 @@ import kbtu.midterm.expense.ui.util.formatAmount
 fun InsightsScreen(
     summaries: List<CategorySummary>,
     monthTotal: Double,
+    aiInsights: String?,
+    isAiLoading: Boolean,
+    onGetAiInsights: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val maxTotal = summaries.maxOfOrNull { it.total } ?: 1.0
@@ -65,6 +71,30 @@ fun InsightsScreen(
                 }
                 items(summaries, key = { it.category.name }) { summary ->
                     CategoryBreakdownCard(summary = summary, maxTotal = maxTotal)
+                }
+                item {
+                    Button(
+                        onClick = onGetAiInsights,
+                        enabled = !isAiLoading,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        if (isAiLoading) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                        } else {
+                            Text("Get AI Insights")
+                        }
+                    }
+                }
+                if (aiInsights != null) {
+                    item {
+                        Card(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = aiInsights,
+                                modifier = Modifier.padding(Dimens.screenPadding),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                    }
                 }
             }
         }

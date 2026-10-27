@@ -16,9 +16,3 @@ data class CategorySummary(
     val total: Double,
     val count: Int,
 )
-
-data class ExpenseDraft(
-    val amount: Double,
-    val category: ExpenseCategory,
-    val note: String,
-)

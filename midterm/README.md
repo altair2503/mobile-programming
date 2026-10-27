@@ -1,13 +1,13 @@
 # AI Expense Tracker (Midterm)
 
-Android app for logging personal spending in **KZT**, reviewing history, and seeing category insights. Optional **OpenRouter** integration parses natural-language descriptions into structured expense fields (amount, category, note).
+Android app for logging personal spending in **KZT**, reviewing history, and seeing category insights. Optional **OpenRouter** integration produces an AI financial analysis of all your expenses (**AI Insights**).
 
 ## Features
 
 - **Dashboard** — monthly total, recent expenses, FAB to add new entries
 - **History** — full list with **search** and **category filter** (`FilterChip`)
-- **Insights** — spending breakdown by category with progress bars
-- **Add / Edit** — manual form with validation; **Parse with AI** on the add screen
+- **Insights** — spending breakdown by category with progress bars; **Get AI Insights** button sends all expenses to OpenRouter and shows a text analysis
+- **Add / Edit** — manual form with validation
 - **CRUD** — add, update (tap card), delete (trash icon)
 - Material 3 teal theme, reusable composables (`ExpenseCard`, `SummaryCard`, `CategoryChips`, etc.)
 
@@ -26,7 +26,7 @@ Android app for logging personal spending in **KZT**, reviewing history, and see
 | Requirement | Implementation |
 |-------------|----------------|
 | ≥ 3 screens + Navigation Compose | Bottom nav: Dashboard, History, Insights; stack: Add, Edit |
-| ≥ 3 meaningful features | CRUD, search/filter, insights, AI parse |
+| ≥ 3 meaningful features | CRUD, search/filter, insights, AI Insights |
 | Material 3 + reusable UI | `ExpenseTheme`, shared components |
 | Input & state | Forms, chips, snackbars, list updates |
 | `remember` / `rememberSaveable` / hoisting | History filters in `rememberSaveable`; add dialog fields in `remember` |
@@ -41,11 +41,11 @@ Dashboard with monthly total and recent expenses:
 
 <img alt="1-dashboard.png" src="screenshots/1-dashboard.png" width="550"/>
 
-Add expense with AI-assisted parsing:
+Add expense:
 
 <img alt="2-add-expense.png" src="screenshots/2-add-expense.png" width="550"/>
 
-History with search and category filters:
+Insight with AI Enabled:
 
 <img alt="3-history.png" src="screenshots/3-history.png" width="550"/>
 
@@ -63,7 +63,7 @@ History with search and category filters:
    openrouter.api.key=sk-or-v1-...
    ```
 
-   The API key is optional. Without it, manual entry still works; AI parse shows a snackbar explaining the missing key.
+   The API key is optional. Without it, manual entry still works; AI Insights shows a snackbar explaining the missing key.
 
 3. Run the **app** configuration on an emulator or device.
 
@@ -81,17 +81,17 @@ Then open **AI Expense Tracker** on the device.
 1. Create an API key at [openrouter.ai](https://openrouter.ai/).
 2. Add `openrouter.api.key=...` to `local.properties` (never commit this file).
 3. Rebuild the project so `BuildConfig.OPENROUTER_API_KEY` is updated.
-4. On **Add expense**, enter a short description and tap **Parse with AI**.
+4. Open **Insights** and tap **Get AI Insights**.
 
-The app uses model `google/gemma-2-9b-it:free` and expects JSON: `amount`, `category`, `note`.
+The app uses model `google/gemma-2-9b-it:free`. It sends a system prompt (AI Financial Analyst) plus one line per expense (`id | date | amount | category | note`) and shows the plain-text reply. **Note:** all your expenses are sent to the external OpenRouter service.
 
 ## State management (defense notes)
 
 | Mechanism | What we store | Survives rotation? | Survives process death? |
 |-----------|---------------|--------------------|-------------------------|
-| **ViewModel (`StateFlow`)** | Expense list, month total, category summaries, AI loading, snackbar messages | Yes | No |
+| **ViewModel (`StateFlow`)** | Expense list, month total, category summaries, AI insights text and loading flag, snackbar messages | Yes | No |
 | **rememberSaveable** | History search query, selected category filter | Yes | Yes (instance state) |
-| **remember** | Add-screen form fields, AI input text | No | No |
+| **remember** | Add-screen form fields | No | No |
 
 **Why this split?** Business data and totals belong in the ViewModel so rotation does not reset the catalog. Filter UI on History is user input that should survive rotation without serializing every expense into the bundle.
 
@@ -101,7 +101,7 @@ The app uses model `google/gemma-2-9b-it:free` and expects JSON: `amount`, `cate
 midterm/app/src/main/kotlin/kbtu/midterm/expense/
   domain/          # Expense, ExpenseCategory, CategorySummary
   data/            # ExpenseRepository (in-memory)
-  network/         # OpenRouterClient, AiExpenseParser
+  network/         # OpenRouterClient, AiInsightsAnalyst
   ui/
     navigation/    # ExpenseNavHost, routes
     screens/       # Dashboard, History, Insights, AddExpense
@@ -112,7 +112,7 @@ midterm/app/src/main/kotlin/kbtu/midterm/expense/
 
 **Navigation:** `ExpenseNavHost` hosts a `NavHost` with three top-level destinations and push routes for add/edit. Bottom bar is hidden on add/edit.
 
-**Data flow:** UI events → `ExpenseViewModel` → `ExpenseRepository`. AI parse → `AiExpenseParser` → `OpenRouterClient` (OkHttp on `Dispatchers.IO`).
+**Data flow:** UI events → `ExpenseViewModel` → `ExpenseRepository`. AI Insights → `AiInsightsAnalyst` → `OpenRouterClient` (OkHttp on `Dispatchers.IO`).
 
 ## Persistence
 

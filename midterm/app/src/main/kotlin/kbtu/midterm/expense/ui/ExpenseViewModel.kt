@@ -6,7 +6,7 @@ import kbtu.midterm.expense.data.ExpenseRepository
 import kbtu.midterm.expense.domain.CategorySummary
 import kbtu.midterm.expense.domain.Expense
 import kbtu.midterm.expense.domain.ExpenseCategory
-import kbtu.midterm.expense.network.AiExpenseParser
+import kbtu.midterm.expense.network.AiInsightsAnalyst
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +16,7 @@ import java.util.Calendar
 
 class ExpenseViewModel(
     private val repository: ExpenseRepository = ExpenseRepository(),
-    private val aiParser: AiExpenseParser = AiExpenseParser(),
+    private val aiAnalyst: AiInsightsAnalyst = AiInsightsAnalyst(),
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ExpenseUiState())
@@ -82,24 +82,15 @@ class ExpenseViewModel(
         }
     }
 
-    fun parseWithAi(text: String) {
-        if (_uiState.value.isAiParsing) return
-        _uiState.update { it.copy(isAiParsing = true, aiDraft = null) }
+    fun loadAiInsights() {
+        if (_uiState.value.isAiInsightsLoading) return
+        _uiState.update { it.copy(isAiInsightsLoading = true) }
         viewModelScope.launch {
-            aiParser.parse(text)
-                .onSuccess { draft ->
-                    _uiState.update { it.copy(aiDraft = draft) }
-                    showMessage("AI parsed your expense. Review and save.")
-                }
-                .onFailure { error ->
-                    showMessage(error.message ?: "AI parsing failed.")
-                }
-            _uiState.update { it.copy(isAiParsing = false) }
+            aiAnalyst.analyze(_uiState.value.expenses)
+                .onSuccess { text -> _uiState.update { it.copy(aiInsights = text) } }
+                .onFailure { error -> showMessage(error.message ?: "AI insights failed.") }
+            _uiState.update { it.copy(isAiInsightsLoading = false) }
         }
-    }
-
-    fun clearAiDraft() {
-        _uiState.update { it.copy(aiDraft = null) }
     }
 
     fun clearMessage() {

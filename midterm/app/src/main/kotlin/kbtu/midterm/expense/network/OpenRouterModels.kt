@@ -24,10 +24,3 @@ data class ChatCompletionResponse(
 data class ChatChoice(
     val message: ChatMessage? = null,
 )
-
-@Serializable
-data class ParsedExpenseJson(
-    val amount: Double,
-    val category: String,
-    val note: String = "",
-)

@@ -138,6 +138,9 @@ fun ExpenseNavHost(
                 InsightsScreen(
                     summaries = uiState.categorySummaries,
                     monthTotal = uiState.monthTotal,
+                    aiInsights = uiState.aiInsights,
+                    isAiLoading = uiState.isAiInsightsLoading,
+                    onGetAiInsights = viewModel::loadAiInsights,
                 )
             }
             composable(ExpenseRoutes.Add) {
@@ -145,8 +148,6 @@ fun ExpenseNavHost(
                     viewModel = viewModel,
                     expenseId = null,
                     existing = null,
-                    isAiParsing = uiState.isAiParsing,
-                    aiDraft = uiState.aiDraft,
                     onBack = { navController.popBackStack() },
                     onSaved = { navController.popBackStack() },
                 )
@@ -161,8 +162,6 @@ fun ExpenseNavHost(
                     viewModel = viewModel,
                     expenseId = expenseId,
                     existing = existing,
-                    isAiParsing = uiState.isAiParsing,
-                    aiDraft = uiState.aiDraft,
                     onBack = { navController.popBackStack() },
                     onSaved = { navController.popBackStack() },
                 )

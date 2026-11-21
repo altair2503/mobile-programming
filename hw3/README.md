@@ -1,4 +1,4 @@
-# Library Catalog (HW4)
+# Library Catalog (HW3)
 
 Android app for a campus library, continuing HW1 (console) and HW2.
 Architecture: **MVVM** (`ViewModel` + `StateFlow`), **Room** persistence, **Navigation Compose**,
